@@ -27,7 +27,7 @@ myTerminal = "alacritty" -- Sets default terminal
 -- myBrowser = "firefox"
 
 myBorderWidth :: Dimension
-myBorderWidth   = 2
+myBorderWidth   = 5
 
 myNormalBorderColor :: String
 myNormalBorderColor  = colorBack
