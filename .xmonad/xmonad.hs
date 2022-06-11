@@ -14,6 +14,8 @@ import qualified Data.Map as M
 -- Utilities
 import XMonad.Util.SpawnOnce
 
+-- ColorScheme module (set only one!)
+  -- Nord
 import Colors.Nord
 
 myModMask :: KeyMask
@@ -34,10 +36,6 @@ myNormalBorderColor  = colorBack
 myFocusedBorderColor :: String
 myFocusedBorderColor = color15
 
-
-
-
-
 -- Whether focus follows the mouse pointer.
 myFocusFollowsMouse :: Bool
 -- myFocusFollowsMouse = True
@@ -57,7 +55,6 @@ myClickJustFocuses = False
 -- > workspaces = ["web", "irc", "code" ] ++ map show [4..9]
 --
 myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
-
 
 -- START_KEYS
 -- myKeys :: [(String, X ())]
@@ -266,6 +263,7 @@ myLogHook = return ()
 -- By default, do nothing.
 myStartupHook = do
   spawnOnce "nitrogen --restore &"
+  -- spawnOnce "nitrogen --random --set-zoom-fill &" -- Set a random wallpaper
   spawnOnce "picom"
 
 ------------------------------------------------------------------------
