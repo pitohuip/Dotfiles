@@ -1,25 +1,26 @@
+##   IMPORTS   ##
 import os
 import subprocess
-
 from libqtile import bar, layout, widget, hook
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
+from libqtile.dgroups import simple_key_binder
 
+##   VARIABLES   ##
 mod = "mod4"
 myTerm = "alacritty"      # My terminal of choice
 myBrowser = "firefox" # My browser of choice
 
-
+##   KEYBINDINGS   ##
 keys = [
     Key([mod], "Return", lazy.spawn(myTerm), desc="Launch my terminal"),
     Key([mod, "shift"], "Return", lazy.spawn("dmenu_run"), desc='Run Launcher'),
-    Key(["control", "shift"], "e",
-        lazy.spawn("emacsclient -c"),
-        desc='Doom Emacs'
-        ),
+    Key(["control", "shift"], "e", lazy.spawn("emacsclient -c"), desc='Doom Emacs'),
+    Key([mod], "b", lazy.spawn(myBrowser), desc='Launch firefox'),
 
-
+    Key([mod, "shift"], "c", lazy.window.kill(), desc='Kill active window'),
+    Key([mod, "shift"], "q", lazy.shutdown(), desc='Shutdown Qtile'),
 
     # Switch between windows
     Key([mod], "h", lazy.layout.left(), desc="Move focus to left"),
@@ -52,43 +53,29 @@ keys = [
 #    ),
     # Toggle between different layouts as defined below
     Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
-    Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
     Key([mod, "control"], "r", lazy.reload_config(), desc="Reload the config"),
-    Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
-    Key([mod], "r", lazy.spawncmd(), desc="Spawn a command using a prompt widget"),
+    #Key([mod], "r", lazy.spawncmd(), desc="Spawn a command using a prompt widget"),
 ]
 
-groups = [Group(i) for i in "123456789"]
+##   WORKSPACES   ##
+groups = [Group("DEV", layout='monadtall'),
+          Group("WWW", layout='monadtall'),
+          Group("www", layout='monadtall'),
+          Group("SYS", layout='monadtall'),
+          Group("DOC", layout='monadtall'),
+          Group("VBOX", layout='monadtall'),
+          Group("CHAT", layout='monadtall'),
+          Group("MUS", layout='monadtall'),
+          Group("VID", layout='monadtall'),
+          Group("GFX", layout='floating')]
 
-for i in groups:
-    keys.extend(
-        [
-            # mod1 + letter of group = switch to group
-            Key(
-                [mod],
-                i.name,
-                lazy.group[i.name].toscreen(),
-                desc="Switch to group {}".format(i.name),
-            ),
-            # mod1 + shift + letter of group = switch to & move focused window to group
-            Key(
-                [mod, "shift"],
-                i.name,
-                lazy.window.togroup(i.name, switch_group=True),
-                desc="Switch to & move focused window to group {}".format(i.name),
-            ),
-            # Or, use below if you prefer not to switch to that group.
-            # # mod1 + shift + letter of group = move focused window to group
-            # Key([mod, "shift"], i.name, lazy.window.togroup(i.name),
-            #     desc="move focused window to group {}".format(i.name)),
-        ]
-    )
+dgroups_key_binder = simple_key_binder("mod4")
 
+##   WINDOW STYLE IN LAYOUTS   ##
 layout_theme = {"border_width": 2,
                 "margin": 8,
                 "border_focus": "e1acff",
-                "border_normal": "1D2330"
-                }
+                "border_normal": "1D2330"}
 
 layouts = [
     layout.MonadTall(**layout_theme),
@@ -111,36 +98,83 @@ layouts = [
     # layout.Zoomy(),
 ]
 
+##   BAR   ##
 widget_defaults = dict(
-    font="sans",
-    fontsize=14,
+    font="JetbrainsMono Nerd Font Bold",
+    fontsize=16,
     padding=6,
+    background="#1a1b26"
 )
 extension_defaults = widget_defaults.copy()
+
+def left_arrow(background_color, color2):
+    return widget.TextBox(
+        text = '\uE0B2',
+        background = background_color,
+        foreground = color2,
+        fontsize=28,
+        padding=0
+    )
 
 screens = [
     Screen(
         top=bar.Bar(
             [
+
+                #widget.Memory(fmt = 'Mem: {}', padding = 5),
+
+                widget.GroupBox(
+                    font = "JetbrainsMono Nerd Font Medium",
+                    fontsize = 14,
+                    margin_y = 3,
+                    margin_x = 0,
+                    padding_y = 5,
+                    padding_x = 15,
+                    borderwidth = 3,
+                    active = "#ffffff",
+                    rounded = False,
+                    highlight_method = "line",
+                ),
                 widget.CurrentLayout(),
-                widget.GroupBox(),
                 widget.Prompt(),
                 widget.WindowName(),
-                widget.Chord(
-                    chords_colors={
-                        "launch": ("#ff0000", "#ffffff"),
-                    },
-                    name_transform=lambda name: name.upper(),
+                #widget.Chord(
+                #    chords_colors={
+                #        "launch": ("#ff0000", "#ffffff"),
+                #    },
+                #    name_transform=lambda name: name.upper(),
+                #),
+                #widget.TextBox("my config", name="default"),
+                #widget.TextBox("Press &lt;M-r&gt; to spawn", foreground="#d75f5f"),
+                #widget.Systray(),
+                #widget.QuickExit(),
+                #widget.HDDBusyGraph(),
+                widget.Net(
+                    interface = "enp0s3",
+                    format='{down} {up}',
+                    prefix='k',
+                    foreground="#F7768E",
+                    fontshadow="#000000",
                 ),
-                widget.TextBox("my config", name="default"),
-                widget.TextBox("Press &lt;M-r&gt; to spawn", foreground="#d75f5f"),
-                widget.Systray(),
-                widget.Clock(format="%Y-%m-%d %a %I:%M %p"),
-                widget.QuickExit(),
+                left_arrow("#1a1b26", "#2b2f40"),
+                widget.OpenWeather(
+                    location='Tyumen',
+                    format="﨎 {temp}º{units_temperature}",
+                    foreground="#39D7E5",
+                    background="#2b2f40",
+                    fontshadow="#000000",
+                ),
+                left_arrow("#2b2f40", "#1a1b26"),
+                widget.Clock(
+                    format="羽 %a %b %d - %R",
+                    foreground="#9ECE6A",
+                    fontshadow="#000000",
+                ),
             ],
-            24,
+            30,
             # border_width=[2, 0, 2, 0],  # Draw top and bottom borders
             # border_color=["ff00ff", "000000", "ff00ff", "000000"]  # Borders are magenta
+            #margin=[5, 8, 0, 8]
         ),
     ),
 ]
@@ -152,9 +186,8 @@ mouse = [
     Click([mod], "Button2", lazy.window.bring_to_front()),
 ]
 
-dgroups_key_binder = None
 dgroups_app_rules = []  # type: list
-follow_mouse_focus = True
+follow_mouse_focus = False
 bring_front_click = False
 cursor_warp = False
 floating_layout = layout.Floating(
