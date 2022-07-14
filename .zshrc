@@ -33,3 +33,4 @@ compinit
 # End of lines added by compinstall
 
 eval "$(starship init zsh)"
+export PATH="$HOME/.rbenv/bin:$PATH"

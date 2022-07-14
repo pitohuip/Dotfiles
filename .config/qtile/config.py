@@ -58,16 +58,15 @@ keys = [
 ]
 
 ##   WORKSPACES   ##
-groups = [Group("DEV", layout='monadtall'),
-          Group("WWW", layout='monadtall'),
-          Group("www", layout='monadtall'),
-          Group("SYS", layout='monadtall'),
-          Group("DOC", layout='monadtall'),
-          Group("VBOX", layout='monadtall'),
-          Group("CHAT", layout='monadtall'),
-          Group("MUS", layout='monadtall'),
-          Group("VID", layout='monadtall'),
-          Group("GFX", layout='floating')]
+groups = [Group("1", label="Dev", layout='max', matches=[Match(wm_class='emacs')]),
+          Group("2", label="Sys", layout='monadtall', matches=[Match(wm_class='Alacritty')]),
+          Group("3", label="Web", layout='max', matches=[Match(wm_class='firefox')]),
+          Group("4", layout='monadtall'),
+          Group("5", layout='monadtall'),
+          Group("6", layout='monadtall'),
+          Group("7", layout='monadtall'),
+          Group("8", layout='monadtall'),
+          Group("9", layout='floating')]
 
 dgroups_key_binder = simple_key_binder("mod4")
 
@@ -89,10 +88,10 @@ layouts = [
     # layout.Stack(num_stacks=2),
     # layout.Bsp(),
     # layout.Matrix(),
-    # layout.MonadTall(),
     # layout.MonadWide(),
     # layout.RatioTile(),
-    # layout.Tile(),
+    #layout.Tile(**layout_theme),
+    layout.Floating(**layout_theme),
     # layout.TreeTab(),
     # layout.VerticalTile(),
     # layout.Zoomy(),
@@ -101,17 +100,17 @@ layouts = [
 ##   BAR   ##
 widget_defaults = dict(
     font="JetbrainsMono Nerd Font Bold",
-    fontsize=16,
+    fontsize=15,
     padding=6,
     background="#1a1b26"
 )
 extension_defaults = widget_defaults.copy()
 
-def left_arrow(background_color, color2):
+def left_arrow(background_color, foreground_color):
     return widget.TextBox(
         text = '\uE0B2',
         background = background_color,
-        foreground = color2,
+        foreground = foreground_color,
         fontsize=28,
         padding=0
     )
@@ -120,40 +119,42 @@ screens = [
     Screen(
         top=bar.Bar(
             [
-
-                #widget.Memory(fmt = 'Mem: {}', padding = 5),
-
+                widget.TextBox(
+                    text="",
+                    fontsize=24,
+                    padding = 27,
+                    fontshadow="#0000ff",
+                ),
                 widget.GroupBox(
-                    font = "JetbrainsMono Nerd Font Medium",
-                    fontsize = 14,
-                    margin_y = 3,
-                    margin_x = 0,
-                    padding_y = 5,
-                    padding_x = 15,
-                    borderwidth = 3,
-                    active = "#ffffff",
-                    rounded = False,
-                    highlight_method = "line",
+                    font = "JetbrainsMono Nerd Font",
+                    fontsize = 19,
+                    highlight_method = "block",
+                    inactive="#ffffff",
+                    borderwidth=3,
+                    padding_y = 2,
+                    padding_x = 7,
+                    disable_drag=True
                 ),
                 widget.CurrentLayout(),
-                widget.Prompt(),
-                widget.WindowName(),
-                #widget.Chord(
-                #    chords_colors={
-                #        "launch": ("#ff0000", "#ffffff"),
-                #    },
-                #    name_transform=lambda name: name.upper(),
-                #),
-                #widget.TextBox("my config", name="default"),
-                #widget.TextBox("Press &lt;M-r&gt; to spawn", foreground="#d75f5f"),
-                #widget.Systray(),
-                #widget.QuickExit(),
-                #widget.HDDBusyGraph(),
+                widget.WindowName(
+                    format=" ",
+
+                ),
+
+                left_arrow("#1a1b26", "#2b2f40"),
                 widget.Net(
                     interface = "enp0s3",
                     format='{down} {up}',
                     prefix='k',
                     foreground="#F7768E",
+                    fontshadow="#000000",
+                    background="#2b2f40",
+                ),
+                left_arrow("#2b2f40", "#1a1b26"),
+                widget.Memory(
+                    format="{MemUsed: .0f} Mb",
+                    measure_mem="M",
+                    foreground="#C574DD",
                     fontshadow="#000000",
                 ),
                 left_arrow("#1a1b26", "#2b2f40"),
